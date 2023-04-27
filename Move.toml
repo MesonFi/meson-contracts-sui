@@ -1,0 +1,10 @@
+[package]
+name = "meson-contracts-sui"
+version = "0.1.0"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "devnet" }
+
+[addresses]
+sui =  "0x2"
+Meson =  "0x0"
