@@ -9,11 +9,16 @@ const {
 
 dotenv.config()
 
-const testnetMode = true
+const {
+  TESTNET_MODE,
+  PRIVATE_KEY,
+} = process.env
+
+const testnetMode = Boolean(TESTNET_MODE)
 const networkId = testnetMode ? 'sui-testnet' : 'sui'
 presets.useTestnet(testnetMode)
 
-swap(process.env.PRIVATE_KEY)
+swap(PRIVATE_KEY)
 
 async function swap(privateKey) {
   const network = presets.getNetwork(networkId)

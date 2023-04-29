@@ -48,9 +48,4 @@ active_address: "${wallet.address}"
   }
   fs.writeFileSync(path.join(suiConfigDir, 'config.yaml'), configYaml)
   fs.writeFileSync(path.join(suiConfigDir, 'sui.keystore'), keystore)
-
-  //   const moveTomlFile = path.join(__dirname, '../Move.toml')
-  //   const moveToml = fs.readFileSync(moveTomlFile, 'utf8')
-  //   const newMoveToml = moveToml.replace(/(?<=Meson = ")0x.*(?=")/, key.address)
-  //   fs.writeFileSync(moveTomlFile, newMoveToml)
 }
