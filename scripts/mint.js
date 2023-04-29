@@ -20,7 +20,6 @@ async function mint(amount, to) {
   const mesonClient = presets.createMesonClient(networkId, wallet)
   const mintTo = to || wallet.address
 
-  let coinObjectList = {}
   for (const coin of network.tokens) {
     const coinContract = mesonClient.getTokenContract(coin.addr)
 
@@ -34,21 +33,14 @@ async function mint(amount, to) {
       '0x2::coin::mint_and_transfer',
       ({ txBlock, metadata }) => ({
         arguments: [
-          txBlock.object(metadata.treasuryCap[coin.tokenIndex.toString()]),
+          txBlock.object(metadata.treasuryCap[symbol]),
           txBlock.pure(utils.parseUnits(amount, decimals)),
           txBlock.pure(mintTo)
         ],
         typeArguments: [coin.addr],
       })
     )
-    const minted = await tx.wait()
-    
-    const coinObject = minted.changes.find(obj => obj.type == 'created')?.objectId
-    console.log(`Minted. Object created:`, coinObject)
-
+    await tx.wait()
     console.log(`Current balance:`, utils.formatUnits(await coinContract.balanceOf(mintTo), decimals), symbol)
-    coinObjectList[symbol] = coinObject
   }
-
-  return coinObjectList
 }
