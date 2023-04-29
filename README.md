@@ -13,3 +13,9 @@ The address of Meson and metadata will be printed in `postdeploy` script. Rememb
 ### Perform a swap
 
 Just run `yarn swap`.
+
+### Acknowledgement
+
+Project Author: [wyf-ACCEPT](https://github.com/wyf-ACCEPT)
+
+This project was originally created by wyf-ACCEPT at [wyf-ACCEPT/meson-contracts-sui](https://github.com/wyf-ACCEPT/meson-contracts-sui) and has since been taken over and maintained by [MesonFi](https://github.com/mesonfi). We would like to thank wyf-ACCEPT for his professional assistance in completing the work for Sui. If you have any questions or suggestions, please feel free to contact MesonFi in [discord](https://discord.gg/meson) or [wyf-ACCEPT](https://github.com/wyf-ACCEPT).
