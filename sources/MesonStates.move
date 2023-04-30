@@ -162,6 +162,7 @@ module Meson::MesonStates {
         assert!(pool_index == table::remove(&mut storeG.pool_of_authorized_addr, addr), EPOOL_ADDR_AUTHORIZED_TO_ANOTHER);
     }
 
+
     public(friend) fun coins_to_pool<CoinType>(pool_index: u64, coins_to_add: Coin<CoinType>, storeG: &mut GeneralStore) {
         let in_pool_coins = bag::borrow_mut(&mut storeG.in_pool_coins, type_name::get<CoinType>());
         if (table::contains(in_pool_coins, pool_index)) {
