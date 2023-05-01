@@ -30,8 +30,8 @@ async function swap(privateKey) {
   const wallet = adaptors.getWallet(privateKey, client)
   console.log(`Wallet address: ${wallet.address}`)
 
-  const [mesonAddress, metadata] = parseDeployed()
-  const mesonInstance = adaptors.getContract(mesonAddress, Meson.abi, wallet, metadata)
+  const { mesonAddress } = parseDeployed()
+  const mesonInstance = adaptors.getContract(mesonAddress, Meson.abi, wallet)
   const signer = {
     getAddress: () => wallet.address,
     signMessage: async data => wallet.signMessage(data),

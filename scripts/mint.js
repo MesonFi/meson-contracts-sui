@@ -21,8 +21,8 @@ async function mint(amount, to) {
   const client = presets.createNetworkClient(networkId, [network.url])
   const wallet = adaptors.getWallet(privateKey, client)
 
-  const [mesonAddress, metadata] = parseDeployed()
-  const mesonInstance = adaptors.getContract(mesonAddress, Meson.abi, wallet, metadata)
+  const { mesonAddress, treasuryCap } = parseDeployed()
+  const mesonInstance = adaptors.getContract(mesonAddress, Meson.abi, wallet)
   const mesonClient = await MesonClient.Create(mesonInstance)
 
   const mintTo = to || wallet.address
@@ -38,11 +38,11 @@ async function mint(amount, to) {
 
     const tx = await mesonClient.mesonInstance.call(
       '0x2::coin::mint_and_transfer',
-      ({ txBlock, metadata }) => ({
+      txb => ({
         arguments: [
-          txBlock.object(metadata.treasuryCap[symbol]),
-          txBlock.pure(utils.parseUnits(amount, decimals)),
-          txBlock.pure(mintTo)
+          txb.object(treasuryCap[symbol]),
+          txb.pure(utils.parseUnits(amount, decimals)),
+          txb.pure(mintTo)
         ],
         typeArguments: [coinAddr],
       })

@@ -1,6 +1,6 @@
 {
   "name": "meson-contracts-sui",
-  "version": "0.1.0",
+  "version": "0.9.0-beta",
   "license": "MIT",
   "scripts": {
     "wallet": "node ./scripts/prepare_wallet.js",
@@ -13,9 +13,9 @@
     "swap": "node ./scripts/swap.js"
   },
   "dependencies": {
-    "@mesonfi/contract-abis": "^1.7.0",
-    "@mesonfi/presets": "^1.9.0-beta.3",
-    "@mesonfi/sdk": "^1.9.0-beta.3",
+    "@mesonfi/contract-abis": "^1.9.0",
+    "@mesonfi/presets": "^1.9.0-beta.4",
+    "@mesonfi/sdk": "^1.9.0-beta.4",
     "@mysten/sui.js": "^0.32.1",
     "dotenv": "^16.0.3",
     "ethers": "^5.7.1"

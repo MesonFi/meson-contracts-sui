@@ -8,7 +8,7 @@
 4. Run `yarn build` or `yarn test` to build or test.
 5. Run `yarn deploy` for deployment. Will automatically run `postdeploy` script to register coins and make pool deposits.
 
-The address of Meson and metadata will be printed in `postdeploy` script. Remember to update them in `@mesonfi/presets`.
+The address of Meson will be printed in `postdeploy` script. Remember to update them in `@mesonfi/presets`.
 
 ### Perform a swap
 

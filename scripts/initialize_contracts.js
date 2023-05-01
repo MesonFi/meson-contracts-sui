@@ -30,8 +30,9 @@ async function initialize() {
   const client = presets.createNetworkClient(networkId, [network.url])
   const wallet = adaptors.getWallet(privateKey, client)
 
-  const [mesonAddress, metadata] = parseDeployed()
-  const mesonInstance = adaptors.getContract(mesonAddress, Meson.abi, wallet, metadata)
+  const { mesonAddress } = parseDeployed()
+  console.log('Deployed to:', mesonAddress)
+  const mesonInstance = adaptors.getContract(mesonAddress, Meson.abi, wallet)
 
   const coins = [
     { symbol: 'USDC', tokenIndex: 1 },
@@ -63,6 +64,4 @@ async function initialize() {
     }
     await tx.wait()
   }
-
-  console.log(JSON.stringify({ mesonAddress, metadata }, null, 2))
 }
