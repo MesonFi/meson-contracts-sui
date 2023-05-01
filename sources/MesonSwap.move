@@ -5,7 +5,7 @@
 module Meson::MesonSwap {
     use std::vector;
     use sui::transfer;
-    use sui::coin::{Self, Coin};
+    use sui::coin::Coin;
     use sui::clock::{Self, Clock};
     use sui::tx_context::{Self, TxContext};
     use Meson::MesonHelpers;
@@ -39,7 +39,6 @@ module Meson::MesonSwap {
         signature: vector<u8>, // must be signed by `initiator`
         initiator: vector<u8>, // an eth address of (20 bytes), the signer to sign for release
         pool_index: u64,
-        // coin_from_sender: &mut Coin<CoinType>,
         coin_list: vector<Coin<CoinType>>,
         clock_object: &Clock,
         storeG: &mut GeneralStore,
@@ -63,9 +62,7 @@ module Meson::MesonSwap {
 
         vector::push_back(&mut encoded_swap, 0xff); // so it cannot be identical to a swap_id
         MesonStates::add_posted_swap(encoded_swap, pool_index, initiator, tx_context::sender(ctx), storeG);
-        let coin_from_sender = MesonHelpers::merge_coins(coin_list, ctx);
-        let coins = coin::split(&mut coin_from_sender, amount, ctx);
-        transfer::public_transfer(coin_from_sender, tx_context::sender(ctx));
+        let coins = MesonStates::merge_coins_and_split(coin_list, amount, ctx);
         MesonStates::coins_to_pending(encoded_swap, coins, storeG);
     }
 

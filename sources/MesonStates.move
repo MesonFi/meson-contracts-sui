@@ -1,7 +1,8 @@
 module Meson::MesonStates {
+    use std::vector;
+    use sui::table;
     use std::type_name::{Self, TypeName};
     use sui::bag;
-    use sui::table;
     use sui::transfer;
     use sui::coin::{Self, Coin};
     use sui::object::{Self, UID};
@@ -24,6 +25,7 @@ module Meson::MesonStates {
     const ESWAP_NOT_EXISTS: u64 = 34;
     const ESWAP_ALREADY_EXISTS: u64 = 35;
     const ESWAP_COIN_MISMATCH: u64 = 38;
+    const ESWAP_COIN_LIST_EMPTY: u64 = 39;
     const ESWAP_BONDED_TO_OTHERS: u64 = 44;
 
     friend Meson::MesonSwap;
@@ -163,6 +165,19 @@ module Meson::MesonStates {
     }
 
 
+    public(friend) fun merge_coins_and_split<CoinType>(coin_list: vector<Coin<CoinType>>, amount: u64, ctx: &mut TxContext): Coin<CoinType> {
+        assert!(vector::length(&coin_list) > 0, ESWAP_COIN_LIST_EMPTY);
+
+        let merged_coins = vector::pop_back(&mut coin_list);
+        while (vector::length(&coin_list) != 0) {
+            coin::join(&mut merged_coins, vector::pop_back(&mut coin_list));
+        };
+        vector::destroy_empty(coin_list);
+        let coins = coin::split(&mut merged_coins, amount, ctx);
+        transfer::public_transfer(merged_coins, tx_context::sender(ctx));
+        coins
+    }
+
     public(friend) fun coins_to_pool<CoinType>(pool_index: u64, coins_to_add: Coin<CoinType>, storeG: &mut GeneralStore) {
         let in_pool_coins = bag::borrow_mut(&mut storeG.in_pool_coins, type_name::get<CoinType>());
         if (table::contains(in_pool_coins, pool_index)) {
@@ -174,8 +189,8 @@ module Meson::MesonStates {
     }
 
     public(friend) fun coins_from_pool<CoinType>(
-        pool_index: u64, 
-        amount: u64, 
+        pool_index: u64,
+        amount: u64,
         storeG: &mut GeneralStore,
         ctx: &mut TxContext
     ): Coin<CoinType> {
