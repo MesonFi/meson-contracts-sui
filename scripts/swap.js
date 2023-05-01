@@ -1,11 +1,15 @@
 const dotenv = require('dotenv')
-const presets = require('@mesonfi/presets').default
 const {
   adaptors,
+  MesonClient,
   SignedSwapRequest,
   SignedSwapRelease,
   NonEcdsaRemoteSwapSigner,
 } = require('@mesonfi/sdk')
+const presets = require('@mesonfi/presets').default
+const { Meson } = require('@mesonfi/contract-abis')
+
+const parseDeployed = require('./parse_deployed').default
 
 dotenv.config()
 
@@ -26,14 +30,15 @@ async function swap(privateKey) {
   const wallet = adaptors.getWallet(privateKey, client)
   console.log(`Wallet address: ${wallet.address}`)
 
+  const [mesonAddress, metadata] = parseDeployed()
+  const mesonInstance = adaptors.getContract(mesonAddress, Meson.abi, wallet, metadata)
   const signer = {
     getAddress: () => wallet.address,
     signMessage: async data => wallet.signMessage(data),
     signTypedData: async data => '0x',
   }
   const swapSigner = new NonEcdsaRemoteSwapSigner(signer)
-  const mesonClient = presets.createMesonClient(networkId, wallet)
-  mesonClient.setSwapSigner(swapSigner)
+  const mesonClient = await MesonClient.Create(mesonInstance, swapSigner)
 
 
   const swapData = {

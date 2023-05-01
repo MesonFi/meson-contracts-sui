@@ -2,8 +2,11 @@ const fs = require('fs')
 const path = require('path')
 const { fromB64 } = require('@mysten/sui.js')
 const { utils } = require('ethers')
-const { adaptors } = require('@mesonfi/sdk')
+const { adaptors, MesonClient } = require('@mesonfi/sdk')
 const presets = require('@mesonfi/presets').default
+const { Meson } = require('@mesonfi/contract-abis')
+
+const parseDeployed = require('./parse_deployed').default
 
 const networkId = 'sui-testnet'
 presets.useTestnet(true)
@@ -17,11 +20,15 @@ async function mint(amount, to) {
   const network = presets.getNetwork(networkId)
   const client = presets.createNetworkClient(networkId, [network.url])
   const wallet = adaptors.getWallet(privateKey, client)
-  const mesonClient = presets.createMesonClient(networkId, wallet)
-  const mintTo = to || wallet.address
 
-  for (const coin of network.tokens) {
-    const coinContract = mesonClient.getTokenContract(coin.addr)
+  const [mesonAddress, metadata] = parseDeployed()
+  const mesonInstance = adaptors.getContract(mesonAddress, Meson.abi, wallet, metadata)
+  const mesonClient = await MesonClient.Create(mesonInstance)
+
+  const mintTo = to || wallet.address
+  for (const tokenIndex of [1, 2]) {
+    const coinAddr = mesonClient.tokenAddr(tokenIndex)
+    const coinContract = mesonClient.getTokenContract(coinAddr)
 
     const name = await coinContract.name()
     const symbol = await coinContract.symbol()
@@ -37,7 +44,7 @@ async function mint(amount, to) {
           txBlock.pure(utils.parseUnits(amount, decimals)),
           txBlock.pure(mintTo)
         ],
-        typeArguments: [coin.addr],
+        typeArguments: [coinAddr],
       })
     )
     await tx.wait()
