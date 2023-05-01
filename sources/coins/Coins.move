@@ -6,8 +6,7 @@ module Meson::USDC {
     use sui::coin::{Self, TreasuryCap, Coin};
     use sui::tx_context::{Self, TxContext};
 
-    const InitSupply: u64 = 100_000_000_000_000;
-    const MaxGiveout: u64 = 5_000_000_000;
+    const InitSupply: u64 = 1_000_000_000_000;
     const EAmountExceed: u64 = 0;
 
     struct USDC has drop {}
@@ -46,8 +45,7 @@ module Meson::USDT {
     use sui::coin::{Self, TreasuryCap, Coin};
     use sui::tx_context::{Self, TxContext};
 
-    const InitSupply: u64 = 100_000_000_000_000;
-    const MaxGiveout: u64 = 5_000_000_000;
+    const InitSupply: u64 = 1_000_000_000_000;
     const EAmountExceed: u64 = 0;
 
     struct USDT has drop {}
@@ -86,8 +84,7 @@ module Meson::UCT {
     use sui::coin::{Self, TreasuryCap, Coin};
     use sui::tx_context::{Self, TxContext};
 
-    const InitSupply: u64 = 100_000_000_000_000;
-    const MaxGiveout: u64 = 5_000_000_000;
+    const InitSupply: u64 = 1_000_000_000_000;
     const EAmountExceed: u64 = 0;
 
     struct UCT has drop {}
