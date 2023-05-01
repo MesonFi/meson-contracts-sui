@@ -1,7 +1,7 @@
 module Meson::MesonStates {
     use std::vector;
-    use sui::table;
     use std::type_name::{Self, TypeName};
+    use sui::table;
     use sui::bag;
     use sui::transfer;
     use sui::coin::{Self, Coin};
@@ -162,6 +162,14 @@ module Meson::MesonStates {
 
     public(friend) fun remove_authorized(pool_index: u64, addr: address, storeG: &mut GeneralStore) {
         assert!(pool_index == table::remove(&mut storeG.pool_of_authorized_addr, addr), EPOOL_ADDR_AUTHORIZED_TO_ANOTHER);
+    }
+
+    public(friend) fun transfer_pool_owner(pool_index: u64, addr: address, storeG: &mut GeneralStore) {
+        assert!(pool_index != 0, EPOOL_INDEX_CANNOT_BE_ZERO);
+        assert!(table::contains(&storeG.pool_of_authorized_addr, addr), EPOOL_ADDR_NOT_AUTHORIZED);
+        assert!(pool_index == *table::borrow(&storeG.pool_of_authorized_addr, addr), EPOOL_ADDR_AUTHORIZED_TO_ANOTHER);
+        table::remove(&mut storeG.pool_owners, pool_index);
+        table::add(&mut storeG.pool_owners, pool_index, addr);
     }
 
 
