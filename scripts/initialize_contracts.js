@@ -13,7 +13,8 @@ dotenv.config()
 
 const {
   TESTNET_MODE,
-  AMOUNT_TO_DEPOSIT: amount,
+  LP_PRIVATE_KEY,
+  AMOUNT_TO_DEPOSIT,
 } = process.env
 
 const testnetMode = Boolean(TESTNET_MODE)
@@ -24,7 +25,7 @@ initialize()
 
 async function initialize() {
   const keystore = fs.readFileSync(path.join(__dirname, '../.sui/sui.keystore'))
-  const privateKey = utils.hexlify(fromB64(JSON.parse(keystore)[0])).replace('0x01', '0x')
+  const privateKey = utils.hexlify(fromB64(JSON.parse(keystore)[0])).replace('0x00', '0x')
 
   const network = presets.getNetwork(networkId)
   const client = presets.createNetworkClient(networkId, [network.url])
@@ -32,27 +33,41 @@ async function initialize() {
 
   const { mesonAddress } = parseDeployed()
   console.log('Deployed to:', mesonAddress)
-  const mesonInstance = adaptors.getContract(mesonAddress, Meson.abi, wallet)
+  let mesonInstance = adaptors.getContract(mesonAddress, Meson.abi, wallet)
 
-  const coins = [
-    { symbol: 'USDC', tokenIndex: 1 },
-    { symbol: 'USDT', tokenIndex: 2 },
-  ]
+  const coins = testnetMode
+    ? [{ symbol: 'USDC', tokenIndex: 1 }, { symbol: 'USDT', tokenIndex: 2 }]
+    : network.tokens
+
   for (const coin of coins) {
-    console.log(`addSupportToken (${coin.symbol})`)
-    const coinAddr = `${mesonAddress}::${coin.symbol}::${coin.symbol}`
+    const coinAddr = testnetMode ? `${mesonAddress}::${coin.symbol}::${coin.symbol}` : coin.addr
+    console.log(`addSupportToken (${coinAddr})`)
     const tx = await mesonInstance.addSupportToken(coinAddr, coin.tokenIndex)
     await tx.wait()
   }
 
-  if (!amount) {
+  if (LP_PRIVATE_KEY) {
+    const lp = adaptors.getWallet(LP_PRIVATE_KEY, client)
+    console.log('LP address:', lp.address)
+
+    const tx = await mesonInstance.call(
+      `${mesonAddress}::MesonStates::transferPremiumManager`,
+      (txb, metadata) => ({ arguments: [txb.object(lp.address), txb.object(metadata.storeG)] })
+    )
+    console.log(`transferPremiumManager: ${tx.hash}`)
+    await tx.wait()
+
+    mesonInstance = mesonInstance.connect(lp)
+  }
+
+  if (!AMOUNT_TO_DEPOSIT) {
     return
   }
 
   for (const coin of coins) {
-    console.log(`Depositing ${amount} ${coin.symbol}...`)
-    const value = utils.parseUnits(amount, 6)
-    const poolIndex = await mesonInstance.poolOfAuthorizedAddr(wallet.address)
+    console.log(`Depositing ${AMOUNT_TO_DEPOSIT} ${coin.symbol}...`)
+    const value = utils.parseUnits(AMOUNT_TO_DEPOSIT, 6)
+    const poolIndex = await mesonInstance.poolOfAuthorizedAddr(lp.address)
     const needRegister = poolIndex == 0
     const poolTokenIndex = coin.tokenIndex * 2**40 + (needRegister ? 1 : poolIndex)
 

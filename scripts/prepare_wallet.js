@@ -40,7 +40,7 @@ active_env: devnet
 active_address: "${wallet.address}"
 `
 
-  const pk = toB64(new Uint8Array([1, ...fromB64(wallet.keypair.export().privateKey)]))
+  const pk = toB64(new Uint8Array([0, ...fromB64(wallet.keypair.export().privateKey)]))
   const keystore = JSON.stringify([pk], null, 2)
 
   if (!fs.existsSync(suiConfigDir)) {

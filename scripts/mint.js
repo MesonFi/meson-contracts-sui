@@ -15,7 +15,7 @@ mint('1000000')
 
 async function mint(amount, to) {
   const keystore = fs.readFileSync(path.join(__dirname, '../.sui/sui.keystore'))
-  const privateKey = utils.hexlify(fromB64(JSON.parse(keystore)[0])).replace('0x01', '0x')
+  const privateKey = utils.hexlify(fromB64(JSON.parse(keystore)[0])).replace('0x00', '0x')
 
   const network = presets.getNetwork(networkId)
   const client = presets.createNetworkClient(networkId, [network.url])
@@ -26,9 +26,8 @@ async function mint(amount, to) {
   const mesonClient = await MesonClient.Create(mesonInstance)
 
   const mintTo = to || wallet.address
-  for (const tokenIndex of [1, 2]) {
-    const coinAddr = mesonClient.tokenAddr(tokenIndex)
-    const coinContract = mesonClient.getTokenContract(coinAddr)
+  for (const coin of network.tokens) {
+    const coinContract = mesonClient.getTokenContract(coin.addr)
 
     const name = await coinContract.name()
     const symbol = await coinContract.symbol()
@@ -44,7 +43,7 @@ async function mint(amount, to) {
           txb.pure(utils.parseUnits(amount, decimals)),
           txb.pure(mintTo)
         ],
-        typeArguments: [coinAddr],
+        typeArguments: [coin.addr],
       })
     )
     await tx.wait()
