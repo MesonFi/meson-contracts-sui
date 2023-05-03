@@ -1,5 +1,3 @@
-// These 3 modules are only deployed on testnet/devnet!
-
 module Meson::USDC {
     use std::option;
     use sui::transfer;
@@ -14,7 +12,7 @@ module Meson::USDC {
     fun init(witness: USDC, ctx: &mut TxContext) {
         let (treasury_cap, metadata) = coin::create_currency(
             witness,
-            6,
+            8,
             b"USDC",
             b"Circle USD",
             b"Circle USD on Sui",
@@ -53,7 +51,7 @@ module Meson::USDT {
     fun init(witness: USDT, ctx: &mut TxContext) {
         let (treasury_cap, metadata) = coin::create_currency(
             witness,
-            6,
+            8,
             b"USDT",
             b"Tether USD",
             b"Tether USD on Sui",
@@ -92,7 +90,7 @@ module Meson::UCT {
     fun init(witness: UCT, ctx: &mut TxContext) {
         let (treasury_cap, metadata) = coin::create_currency(
             witness,
-            6,
+            8,
             b"UCT",
             b"USD Coupon Token",
             b"USD Coupon Token on Sui",

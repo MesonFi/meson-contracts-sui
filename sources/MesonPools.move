@@ -147,7 +147,6 @@ module Meson::MesonPools {
     }
 
 
-    // Step 3: Release
     // Named consistently with solidity contracts
     public entry fun release<CoinType>(
         encoded_swap: vector<u8>,
@@ -180,7 +179,7 @@ module Meson::MesonPools {
         // Release to recipient
         let coins = MesonStates::coins_from_pending<CoinType>(swap_id, storeG);
         if (!waived) {
-            let service_fee = coin::split(&mut coins, MesonHelpers::service_fee(encoded_swap), ctx);
+            let service_fee = coin::split(&mut coins, 100 * MesonHelpers::service_fee(encoded_swap), ctx);
             MesonStates::coins_to_pool(0, service_fee, storeG);
         };
         transfer::public_transfer(coins, recipient);
