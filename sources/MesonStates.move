@@ -181,7 +181,7 @@ module Meson::MesonStates {
             coin::join(&mut merged_coins, vector::pop_back(&mut coin_list));
         };
         vector::destroy_empty(coin_list);
-        let coins = coin::split(&mut merged_coins, 100 * amount, ctx);
+        let coins = coin::split(&mut merged_coins, amount, ctx);
         transfer::public_transfer(merged_coins, tx_context::sender(ctx));
         coins
     }
@@ -204,7 +204,7 @@ module Meson::MesonStates {
     ): Coin<CoinType> {
         let in_pool_coins = bag::borrow_mut(&mut storeG.in_pool_coins, type_name::get<CoinType>());
         let current_coins = table::borrow_mut(in_pool_coins, pool_index);
-        coin::split<CoinType>(current_coins, 100 * amount, ctx)
+        coin::split<CoinType>(current_coins, amount, ctx)
     }
 
     public(friend) fun coins_to_pending<CoinType>(key: vector<u8>, coins: Coin<CoinType>, storeG: &mut GeneralStore) {

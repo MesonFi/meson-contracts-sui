@@ -12,7 +12,7 @@ module Meson::USDC {
     fun init(witness: USDC, ctx: &mut TxContext) {
         let (treasury_cap, metadata) = coin::create_currency(
             witness,
-            8,
+            6,
             b"USDC",
             b"Circle USD",
             b"Circle USD on Sui",
@@ -51,7 +51,7 @@ module Meson::USDT {
     fun init(witness: USDT, ctx: &mut TxContext) {
         let (treasury_cap, metadata) = coin::create_currency(
             witness,
-            8,
+            6,
             b"USDT",
             b"Tether USD",
             b"Tether USD on Sui",
@@ -90,7 +90,7 @@ module Meson::UCT {
     fun init(witness: UCT, ctx: &mut TxContext) {
         let (treasury_cap, metadata) = coin::create_currency(
             witness,
-            8,
+            6,
             b"UCT",
             b"USD Coupon Token",
             b"USD Coupon Token on Sui",
